@@ -3,13 +3,14 @@ import './App.css';
 import Navigation from './components/navigation/Navigation';
 import Logo from './components/logo/Logo';
 import ImageBrowser from './components/imageBrowser/ImageBrowser';
+import UserRank from './components/userRank/UserRank';
 
 function App() {
   return (
     <div className="App">
       <Navigation />
       <Logo />
-      {/*<UserRank />*/}
+      <UserRank />
       <ImageBrowser />
       {/*<ImageDisplay />
       <FaceRecognition />*/}
