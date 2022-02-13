@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {Component}from 'react';
 import './App.css';
 import Particles from 'react-tsparticles';
 import Navigation from './components/navigation/Navigation';
@@ -46,18 +46,36 @@ const particlesOptions = {
   }
 };
 
-function App() {
-  return (
-    <div className="App">
-      <Particles params={particlesOptions} className='particles'/>
-      <Navigation />
-      <Logo />
-      <UserRank />
-      <ImageBrowser />
-      {/*<ImageDisplay />
-      <FaceRecognition />*/}
-    </div>
-  );
+class App extends Component{
+
+  constructor(){
+    super();
+    this.state = {
+      input: ''
+    };
+  }
+
+  onInputChange = (event) => {
+    console.log(event.target.value);
+  }
+
+  onButtonClick = () => {
+    console.log('Clicked');
+  }
+
+  render(){
+    return(
+      <div className="App">
+        <Particles params={particlesOptions} className='particles'/>
+        <Navigation />
+        <Logo />
+        <UserRank />
+        <ImageBrowser onInputChange={this.onInputChange} onButtonClick={this.onButtonClick}/>
+        {/*<ImageDisplay />
+        <FaceRecognition />*/}
+      </div>
+    );
+  }
 }
 
 export default App;
