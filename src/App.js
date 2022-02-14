@@ -1,10 +1,12 @@
 import React, {Component}from 'react';
 import './App.css';
 import Particles from 'react-tsparticles';
+// import Clarifai from 'clarifai';
 import Navigation from './components/navigation/Navigation';
 import Logo from './components/logo/Logo';
 import ImageBrowser from './components/imageBrowser/ImageBrowser';
 import UserRank from './components/userRank/UserRank';
+import FaceRecognition from './components/faceRecognition/FaceRecognition';
 
 const particlesOptions = {
   particles: {
@@ -46,21 +48,26 @@ const particlesOptions = {
   }
 };
 
+// const app = new Clarifai.App({
+//   apiKey: 'd42c624b33874b72be81da6785828702'
+//  });
+
 class App extends Component{
 
   constructor(){
     super();
     this.state = {
-      input: ''
+      input: '',
+      imageURL: ''
     };
   }
 
   onInputChange = (event) => {
-    console.log(event.target.value);
+    this.setState({input: event.target.value});
   }
 
   onButtonClick = () => {
-    console.log('Clicked');
+    this.setState({imageURL: this.state.input});
   }
 
   render(){
@@ -71,8 +78,7 @@ class App extends Component{
         <Logo />
         <UserRank />
         <ImageBrowser onInputChange={this.onInputChange} onButtonClick={this.onButtonClick}/>
-        {/*<ImageDisplay />
-        <FaceRecognition />*/}
+        <FaceRecognition imageURL={this.state.imageURL}/>
       </div>
     );
   }
