@@ -1,7 +1,7 @@
-import React, {Component}from 'react';
+import React, { Component } from 'react';
 import './App.css';
 import Particles from 'react-tsparticles';
-// import Clarifai from 'clarifai';
+import Clarifai from 'clarifai';
 import Navigation from './components/navigation/Navigation';
 import Logo from './components/logo/Logo';
 import ImageBrowser from './components/imageBrowser/ImageBrowser';
@@ -48,13 +48,13 @@ const particlesOptions = {
   }
 };
 
-// const app = new Clarifai.App({
-//   apiKey: 'd42c624b33874b72be81da6785828702'
-//  });
+const app = new Clarifai.App({
+  apiKey: '533a7995bc2649d5bb8da00bad627c70'
+});
 
-class App extends Component{
+class App extends Component {
 
-  constructor(){
+  constructor() {
     super();
     this.state = {
       input: '',
@@ -63,22 +63,32 @@ class App extends Component{
   }
 
   onInputChange = (event) => {
-    this.setState({input: event.target.value});
+    this.setState({ input: event.target.value });
   }
 
   onButtonClick = () => {
-    this.setState({imageURL: this.state.input});
+    this.setState({ imageURL: this.state.input });
+    app.models.predict(Clarifai.COLOR_MODEL, this.state.input).then(
+      function (response) {
+        console.log(response);
+      },
+      function (err) {
+
+      }
+    );
   }
 
-  render(){
-    return(
+  render() {
+    return (
       <div className="App">
-        <Particles params={particlesOptions} className='particles'/>
-        <Navigation />
-        <Logo />
+        <Particles params={particlesOptions} className='particles' />
+        <div className='nav'>
+          <Logo />
+          <Navigation />
+        </div>
         <UserRank />
-        <ImageBrowser onInputChange={this.onInputChange} onButtonClick={this.onButtonClick}/>
-        <FaceRecognition imageURL={this.state.imageURL}/>
+        <ImageBrowser onInputChange={this.onInputChange} onButtonClick={this.onButtonClick} />
+        <FaceRecognition imageURL={this.state.imageURL} />
       </div>
     );
   }
