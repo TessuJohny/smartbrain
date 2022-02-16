@@ -58,8 +58,30 @@ class App extends Component {
     super();
     this.state = {
       input: '',
-      imageURL: ''
+      imageURL: '',
+      box: ''
     };
+  }
+
+  calculateBoxBoundary = (response) => {
+    const boxBoundary = response.outputs[0].data.regions[0].region_info.bounding_box;
+    // console.log(boxBoundary);
+    const imageElement = document.getElementById('inputImg');
+    // console.log(imageElement);
+    const height = Number(imageElement.height);
+    const width = Number(imageElement.width);
+    // console.log(height, width);
+    return {
+      top: height * boxBoundary.top_row,
+      right: width - (width * boxBoundary.right_col),
+      bottom: height - (height * boxBoundary.bottom_row),
+      left: width * boxBoundary.left_col
+    }
+  }
+
+  drawBox = (box) => {
+    console.log(box);
+    this.setState({box: box});
   }
 
   onInputChange = (event) => {
@@ -68,27 +90,22 @@ class App extends Component {
 
   onButtonClick = () => {
     this.setState({ imageURL: this.state.input });
-    app.models.predict(Clarifai.COLOR_MODEL, this.state.input).then(
-      function (response) {
-        console.log(response);
-      },
-      function (err) {
-
-      }
-    );
+    app.models.predict(Clarifai.FACE_DETECT_MODEL, this.state.input)
+    .then(response => this.drawBox(this.calculateBoxBoundary(response)))
+    .catch(err => console.log(err))
   }
 
   render() {
     return (
       <div className="App">
         <Particles params={particlesOptions} className='particles' />
-        <div className='nav'>
+        <div className='header'>
           <Logo />
           <Navigation />
         </div>
         <UserRank />
         <ImageBrowser onInputChange={this.onInputChange} onButtonClick={this.onButtonClick} />
-        <FaceRecognition imageURL={this.state.imageURL} />
+        <FaceRecognition imageURL={this.state.imageURL} box={this.state.box}/>
       </div>
     );
   }

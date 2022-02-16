@@ -1,0 +1,8 @@
+.mt2{
+    position: relative;
+}
+
+.box{
+    position: absolute;
+    border: 3px solid #149df2;
+}

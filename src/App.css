@@ -1,10 +1,15 @@
+.App {
+  text-align: center;
+}
+
+.header{
+  display: flex;
+  justify-content: space-between;
+}
+
 .center{
   display: flex;
   justify-content: center;
-}
-
-.App {
-  text-align: center;
 }
 
 .particles{
@@ -16,7 +21,3 @@
   z-index: -1;
 }
 
-.nav{
-  display: flex;
-  justify-content: space-between;
-}
