@@ -2,8 +2,10 @@ import React, { Component } from 'react';
 import './App.css';
 import Particles from 'react-tsparticles';
 import Clarifai from 'clarifai';
-import Navigation from './components/navigation/Navigation';
-import Logo from './components/logo/Logo';
+import Logo from './components/header/logo/Logo';
+import Navigation from './components/header/navigation/Navigation';
+import SignInCard from './components/signIn/SignInCard';
+import RegisterCard from './components/register/RegisterCard';
 import ImageBrowser from './components/imageBrowser/ImageBrowser';
 import UserRank from './components/userRank/UserRank';
 import FaceRecognition from './components/faceRecognition/FaceRecognition';
@@ -59,18 +61,17 @@ class App extends Component {
     this.state = {
       input: '',
       imageURL: '',
-      box: ''
-    };
+      box: '',
+      router: 'signIn',
+      isSignedIn: false
+    }
   }
 
   calculateBoxBoundary = (response) => {
     const boxBoundary = response.outputs[0].data.regions[0].region_info.bounding_box;
-    // console.log(boxBoundary);
     const imageElement = document.getElementById('inputImg');
-    // console.log(imageElement);
     const height = Number(imageElement.height);
     const width = Number(imageElement.width);
-    // console.log(height, width);
     return {
       top: height * boxBoundary.top_row,
       right: width - (width * boxBoundary.right_col),
@@ -80,8 +81,7 @@ class App extends Component {
   }
 
   drawBox = (box) => {
-    console.log(box);
-    this.setState({box: box});
+    this.setState({ box: box });
   }
 
   onInputChange = (event) => {
@@ -91,21 +91,45 @@ class App extends Component {
   onButtonClick = () => {
     this.setState({ imageURL: this.state.input });
     app.models.predict(Clarifai.FACE_DETECT_MODEL, this.state.input)
-    .then(response => this.drawBox(this.calculateBoxBoundary(response)))
-    .catch(err => console.log(err))
+      .then(response => this.drawBox(this.calculateBoxBoundary(response)))
+      .catch(err => console.log(err))
+  }
+
+  changeRouterTo = (page) => {
+    if(page === 'home'){
+      this.setState({isSignedIn: true});
+    } else{
+      this.setState({isSignedIn: false});
+    }
+    this.setState({ router: page });
   }
 
   render() {
+    const {isSignedIn, imageURL, box, router} = this.state;
     return (
       <div className="App">
         <Particles params={particlesOptions} className='particles' />
         <div className='header'>
           <Logo />
-          <Navigation />
+          <Navigation changeRouterTo={this.changeRouterTo} isSignedIn={isSignedIn}/>
         </div>
-        <UserRank />
-        <ImageBrowser onInputChange={this.onInputChange} onButtonClick={this.onButtonClick} />
-        <FaceRecognition imageURL={this.state.imageURL} box={this.state.box}/>
+        {
+          this.state.router === 'home' 
+          ?
+          <div>
+            <UserRank />
+            <ImageBrowser onInputChange={this.onInputChange} onButtonClick={this.onButtonClick} />
+            <FaceRecognition imageURL={imageURL} box={box} />
+          </div>
+          :
+          (
+            router === 'signIn'
+            ?
+            <SignInCard changeRouterTo={this.changeRouterTo} />
+            :
+            <RegisterCard changeRouterTo={this.changeRouterTo}/>
+          )       
+        }
       </div>
     );
   }
