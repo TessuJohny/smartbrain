@@ -1,12 +1,10 @@
 import React from "react";
 
-const UserRank = () => {
-    let msg = 'Tessu, your current rank is...';
-    let rank = '#5';
+const UserRank = ({ name, count }) => {
+    let msg = name + ', you have made ' + count + ' entries...';
     return (
         <div>
             <div className="white f3">{msg}</div>
-            <div className="white f1">{rank}</div>
         </div>
     );
 }

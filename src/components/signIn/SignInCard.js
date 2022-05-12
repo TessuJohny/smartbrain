@@ -28,11 +28,13 @@ class SignInCard extends React.Component {
             body : JSON.stringify(this.state)
         })
         .then(response => response.json())
-        .then(data => {
-            if (data === 'success') {
-                this.props.changeRouterTo('home');
+        .then(user => {
+            if (user.id) {
+                // console.log(user);
+                this.props.loadUser(user);
+                this.props.goToPage('home');
             } else {
-                console.log(data);
+                console.log(user);
             }
         });
     }
@@ -79,7 +81,7 @@ class SignInCard extends React.Component {
                         <div className="lh-copy mt3">
                             <a href="#0" 
                                 className="f6 link dim black db pointer" 
-                                onClick={() => this.props.changeRouterTo('register')}>Register</a>
+                                onClick={() => this.props.goToPage('register')}>Register</a>
                         </div>
                     </div>
                 </main>

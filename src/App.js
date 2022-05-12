@@ -62,9 +62,15 @@ class App extends Component {
       input: '',
       imageURL: '',
       box: '',
-      router: 'signIn',
-      isSignedIn: false
+      page : 'signIn',
+      isSignedIn: false,
+      user : ''
     }
+  }
+
+  loadUser = (user) => {
+    console.log('Inside loadUser: ' + user);
+    this.setState({ user : user });
   }
 
   calculateBoxBoundary = (response) => {
@@ -91,43 +97,54 @@ class App extends Component {
   onButtonClick = () => {
     this.setState({ imageURL: this.state.input });
     app.models.predict(Clarifai.FACE_DETECT_MODEL, this.state.input)
-      .then(response => this.drawBox(this.calculateBoxBoundary(response)))
+      .then(response => {
+        this.drawBox(this.calculateBoxBoundary(response));
+        fetch('http://localhost:3000/image', {
+          method : 'PUT',
+          headers : {
+            'Content-Type' : 'application/json'
+          },
+          body : JSON.stringify({id : this.state.user.id})
+        })
+        .then(response => response.json())
+        .then(user => this.setState({user : user}))
+      })
       .catch(err => console.log(err))
   }
 
-  changeRouterTo = (page) => {
+  goToPage = (page) => {
     if(page === 'home'){
       this.setState({isSignedIn: true});
     } else{
       this.setState({isSignedIn: false});
     }
-    this.setState({ router: page });
+    this.setState({ page : page });
   }
 
   render() {
-    const {isSignedIn, imageURL, box, router} = this.state;
+    const {isSignedIn, imageURL, box, page, user} = this.state;
     return (
       <div className="App">
         <Particles params={particlesOptions} className='particles' />
         <div className='header'>
           <Logo />
-          <Navigation changeRouterTo={this.changeRouterTo} isSignedIn={isSignedIn}/>
+          <Navigation goToPage={this.goToPage} isSignedIn={isSignedIn}/>
         </div>
         {
-          this.state.router === 'home' 
+          page === 'home' 
           ?
           <div>
-            <UserRank />
+            <UserRank name={user.name} count={user.count}/>
             <ImageBrowser onInputChange={this.onInputChange} onButtonClick={this.onButtonClick} />
             <FaceRecognition imageURL={imageURL} box={box} />
           </div>
           :
           (
-            router === 'signIn'
+            page === 'signIn'
             ?
-            <SignInCard changeRouterTo={this.changeRouterTo} />
+            <SignInCard goToPage={this.goToPage} loadUser={this.loadUser}/>
             :
-            <RegisterCard changeRouterTo={this.changeRouterTo}/>
+            <RegisterCard goToPage={this.goToPage} loadUser={this.loadUser}/>
           )       
         }
       </div>
